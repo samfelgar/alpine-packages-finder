@@ -7,15 +7,20 @@ use Symfony\Component\DomCrawler\Crawler;
 
 class HtmlParser
 {
-    public function hasResults(string $html): bool
+    public function getResults(string $html): HtmlParserResult
     {
         $crawler = new Crawler($html);
 
         try {
-            $crawler->filter('.package > a')->text();
-            return true;
+            $crawler->filter('tbody .package a')->text();
+
+            $repositories = $crawler->filter('tbody .repo a')->each(function (Crawler $crawler) {
+                return $crawler->text();
+            });
+
+            return new HtmlParserResult(true, \array_keys(\array_flip($repositories)));
         } catch (InvalidArgumentException) {
-            return false;
+            return new HtmlParserResult(false, []);
         }
     }
 }

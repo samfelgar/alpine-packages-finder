@@ -28,8 +28,8 @@ class PackageSeeker
             return new Result($package, false, $e->getMessage());
         }
 
-        $result = $this->htmlParser->hasResults($response);
-        return new Result($package, $result, null);
+        $result = $this->htmlParser->getResults($response);
+        return new Result($package, $result->found, null, $result->repositories);
     }
 
     /**
@@ -82,7 +82,8 @@ class PackageSeeker
         $results = [];
 
         $onFulfilled = function (string $packageName, string $html) use ($packages, &$results) {
-            $results[] = new Result($packages[$packageName], $this->htmlParser->hasResults($html), null);
+            $htmlParserResult = $this->htmlParser->getResults($html);
+            $results[] = new Result($packages[$packageName], $htmlParserResult->found, null, $htmlParserResult->repositories);
         };
 
         $onRejected = function (string $packageName, Throwable $exception) use ($packages, &$results) {

@@ -76,11 +76,12 @@ class AlpinePackagesSeeker extends Command
         }
 
         $io->table(
-            ['Package name', 'Found?', 'Message'],
+            ['Package name', 'Found?', 'Message', 'Repositories'],
             array_map(fn (Result $result) => [
                 $result->package->name,
                 $result->found ? '<info>Yes</info>' : '<error>No</error>',
                 $result->message ?? '-',
+                implode(', ', $result->repositories),
             ], $results)
         );
 

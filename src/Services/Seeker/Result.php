@@ -10,6 +10,7 @@ final class Result
         public readonly Package $package,
         public readonly bool $found,
         public readonly ?string $message,
+        public readonly array $repositories = [],
     ) {
     }
 }
