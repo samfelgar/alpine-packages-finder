@@ -10,11 +10,11 @@ class FileParser
 {
     public function parse(string $path): array
     {
-        if (!is_file($path) || !is_readable($path)) {
+        if (!\is_file($path) || !\is_readable($path)) {
             throw new InvalidArgumentException('You must inform a readable file.');
         }
 
-        $handle = fopen($path, 'r');
+        $handle = \fopen($path, 'r');
 
         if ($handle === false) {
             throw new RuntimeException('Error while opening the provided path');
@@ -23,10 +23,16 @@ class FileParser
         $packages = [];
 
         do {
-            $packages[] = trim(fgets($handle));
-        } while (!feof($handle));
+            $line = \trim(\fgets($handle));
 
-        fclose($handle);
+            if (\strlen($line) === 0) {
+                continue;
+            }
+
+            $packages[] = $line;
+        } while (!\feof($handle));
+
+        \fclose($handle);
 
         return $packages;
     }
