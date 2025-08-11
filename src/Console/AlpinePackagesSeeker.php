@@ -64,7 +64,7 @@ class AlpinePackagesSeeker extends Command
 
         if ($path !== null) {
             try {
-                array_push($results, ...$this->handlePath($path, $input));
+                \array_push($results, ...$this->handlePath($path, $input));
             } catch (InvalidArgumentException $exception) {
                 $io->error($exception->getMessage());
                 return Command::FAILURE;
@@ -76,12 +76,13 @@ class AlpinePackagesSeeker extends Command
         }
 
         $io->table(
-            ['Package name', 'Found?', 'Message', 'Repositories'],
-            array_map(fn (Result $result) => [
+            ['Package name', 'Version', 'Found?', 'Message', 'Repositories'],
+            \array_map(static fn(Result $result) => [
                 $result->package->name,
+                $result->package->getVersion() ?? '-',
                 $result->found ? '<info>Yes</info>' : '<error>No</error>',
                 $result->message ?? '-',
-                implode(', ', $result->repositories),
+                \implode(', ', $result->repositories),
             ], $results)
         );
 
@@ -97,11 +98,11 @@ class AlpinePackagesSeeker extends Command
         $path = (new FileParser())->expandHomeDirectory($path);
         $options = $this->seekerOptions($input);
 
-        if (is_dir($path)) {
+        if (\is_dir($path)) {
             return $seeker->byDirectoryPath($path, $options);
         }
 
-        if (is_file($path)) {
+        if (\is_file($path)) {
             return $seeker->byFilePath($path, $options);
         }
 

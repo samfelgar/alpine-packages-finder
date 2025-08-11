@@ -11,6 +11,7 @@ class HtmlParserResult
      */
     public function __construct(
         public readonly bool $found,
+        public readonly ?string $version,
         public readonly array $repositories = [],
     ) {
     }

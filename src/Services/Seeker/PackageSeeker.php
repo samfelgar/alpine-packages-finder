@@ -17,8 +17,7 @@ class PackageSeeker
         private readonly HtmlParser $htmlParser,
         private readonly FileParser $fileParser,
         private readonly LoggerInterface $logger,
-    ) {
-    }
+    ) {}
 
     public function byPackageName(Package $package): Result
     {
@@ -29,6 +28,7 @@ class PackageSeeker
         }
 
         $result = $this->htmlParser->getResults($response);
+        $package->setVersion($result->version);
         return new Result($package, $result->found, null, $result->repositories);
     }
 
@@ -75,6 +75,7 @@ class PackageSeeker
     }
 
     /**
+     * @param Package[] $packages
      * @return Result[]
      */
     private function handleMultiplePackages(array $packages, int $concurrency = 10): array
@@ -83,7 +84,10 @@ class PackageSeeker
 
         $onFulfilled = function (string $packageName, string $html) use ($packages, &$results) {
             $htmlParserResult = $this->htmlParser->getResults($html);
-            $results[] = new Result($packages[$packageName], $htmlParserResult->found, null, $htmlParserResult->repositories);
+            $package = $packages[$packageName];
+            $package->setVersion($htmlParserResult->version);
+
+            $results[] = new Result($package, $htmlParserResult->found, null, $htmlParserResult->repositories);
         };
 
         $onRejected = function (string $packageName, Throwable $exception) use ($packages, &$results) {
