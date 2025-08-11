@@ -28,7 +28,7 @@ class AlpinePackagesSeeker extends Command
 {
     public function __construct(
         private readonly LoggerInterface $logger,
-        string $name = null
+        ?string $name = null,
     ) {
         parent::__construct($name);
     }
